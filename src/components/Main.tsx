@@ -1,43 +1,60 @@
 import * as React from 'react';
 import { ThemeProvider } from '@material-ui/core';
+import localforage from 'localforage';
 
 import Window from './Window';
-import initialState from '../store/initialState';
 import reducer from '../store/reducer';
 import theme from '../theme/theme';
-import getPreview from '../streaming/getPreview';
 import fileProcessor from '../streaming/fileProcessor';
-import { setSource } from '../store/actions';
+import { updateSavedSettings } from '../store/actions';
+import { IProcessorOptionsContainer, SAVED_SETTINGS_KEY } from '../types';
+import getInitialState from '../store/state';
+import { StateContext, DispatchContext } from '../contexts/store';
 
-const initializedState = initialState();
+const initState = getInitialState();
 
 const Main = () => {
-	// Set up app state
-	const [state, dispatch] = React.useReducer(reducer, initializedState);
+  /**
+   * Set up state for the application
+   */
+  const [state, dispatch] = React.useReducer(reducer, initState);
 
-	const fileInputHandler = async (file: File) => {
-		const { data, errors, meta } = await getPreview(file);
-		dispatch(setSource(data, file));
-	};
+  /**
+   * Get saved settings objects from
+   * local database on initial render.
+   */
+  React.useEffect(() => {
+    localforage.getItem(SAVED_SETTINGS_KEY).then(savedSettings => {
+      dispatch(
+        updateSavedSettings(savedSettings as IProcessorOptionsContainer)
+      );
+    });
+  }, []);
 
-	const processFile = () =>
-		state.sourceFile &&
-		fileProcessor(state.sourceFile, {
-			columns: state.columns,
-			filters: state.filters,
-			transforms: state.transforms
-		});
+  /**
+   * Whenever the savedSettings slice of state is updated
+   * it will automatically be saved to local database.
+   */
+  React.useEffect(() => {
+    localforage.setItem(SAVED_SETTINGS_KEY, state.savedSettings);
+  }, [state.savedSettings]);
 
-	return (
-		<ThemeProvider theme={theme}>
-			<Window
-				state={state}
-				dispatch={dispatch}
-				processFile={processFile}
-				handleFileInput={fileInputHandler}
-			/>
-		</ThemeProvider>
-	);
+  /**
+   * Handler to start processing file using
+   * the current source file and settings.
+   */
+  const processFile = () =>
+    state.sourceFile && fileProcessor(state.sourceFile, state.settings);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <StateContext.Provider value={state}>
+        <DispatchContext.Provider value={dispatch}>
+          <Window processFile={processFile} />
+        </DispatchContext.Provider>
+      </StateContext.Provider>
+    </ThemeProvider>
+  );
 };
 
 export default Main;

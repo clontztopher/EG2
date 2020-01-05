@@ -18,25 +18,25 @@ function fileProcessor(srcFile: File, opts: IProcessorOptions) {
     },
     async chunk(results, parser) {
       const { data, errors, meta } = results;
+      // Pause parser until chunk has
+      // been written to stream writer.
       parser.pause();
+
+      // Wait for writer's ready state.
       await streamWriter.ready;
-      // Process chunk
+
       try {
-        // Process chunk
-        const entityArr = chunkProcessor(data, opts);
-        // Convert back to csv
-        const unparsed = unparse(entityArr);
-        // Encode csv string
-        const encoded = textEncoder.encode(unparsed);
-        // Write to stream
-        await streamWriter.write(encoded);
-        // Continue parsing
-        parser.resume();
+        const entityArr = chunkProcessor(data, opts); // Process chunk
+        const unparsed = unparse(entityArr); // Convert back to csv
+        const encoded = textEncoder.encode(unparsed); // Encode csv string
+        await streamWriter.write(encoded); // Write to stream
       } catch (e) {
         parser.abort();
         streamWriter.abort();
         console.error(e);
       }
+      // Continue parsing
+      parser.resume();
     },
     async complete() {
       await streamWriter.ready;

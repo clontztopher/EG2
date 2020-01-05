@@ -5,6 +5,7 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "strict": true,
-    "jsx": "react"
+    "jsx": "react",
+    "esModuleInterop": true
   }
 }
