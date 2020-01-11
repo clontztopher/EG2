@@ -11,6 +11,7 @@ import {
 import SourceForm from './SourceForm';
 import PreviewTable from './PreviewTable';
 import SettingsList from './SettingsList';
+import FilterModule from './FilterModule';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -47,6 +48,15 @@ const Window = ({ processFile }: Props) => {
             </Paper>
           </Grid>
           {/* Settings List */}
+
+          {/* Filters */}
+          <Grid item>
+            <Paper className={classes.paper}>
+              <Typography variant="h6">Filters</Typography>
+              <FilterModule />
+            </Paper>
+          </Grid>
+          {/* Filters */}
 
           {/* Process Button */}
           <Grid item>

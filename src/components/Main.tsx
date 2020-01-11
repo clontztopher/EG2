@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import localforage from 'localforage';
+import { isEmpty } from 'ramda';
 
 import Window from './Window';
 import reducer from '../store/reducer';
 import theme from '../theme/theme';
 import fileProcessor from '../streaming/fileProcessor';
-import { updateSavedSettings } from '../store/actions';
+import { updateSavedSettings, saveSettings } from '../store/actions';
 import { IProcessorOptionsContainer, SAVED_SETTINGS_KEY } from '../types';
 import getInitialState from '../store/state';
 import { StateContext, DispatchContext } from '../contexts/store';
@@ -25,9 +26,11 @@ const Main = () => {
    */
   React.useEffect(() => {
     localforage.getItem(SAVED_SETTINGS_KEY).then(savedSettings => {
-      dispatch(
-        updateSavedSettings(savedSettings as IProcessorOptionsContainer)
-      );
+      if (!isEmpty(savedSettings)) {
+        dispatch(
+          updateSavedSettings(savedSettings as IProcessorOptionsContainer)
+        );
+      }
     });
   }, []);
 

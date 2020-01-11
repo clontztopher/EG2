@@ -2,19 +2,12 @@ import { State } from '../types';
 
 const getInitialState = (): State => ({
   sourceFile: undefined,
-  sourceSample: [[]],
-  addedDate: new Date(),
+  sourceData: [],
+  timestamp: Date.now(),
   settings: {
     columns: [],
-    filters: [
-      [
-        {
-          fn: 'includes',
-          val: '@gmail',
-          attr: 'email'
-        }
-      ]
-    ],
+    filters: [],
+    filterGroups: {},
     transforms: []
   },
   savedSettings: {}

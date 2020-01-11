@@ -1,4 +1,4 @@
-import { Column, ColumnTypes, IProcessorOptions } from '../types';
+import { Column, IProcessorOptions } from '../types';
 
 import applyFilters from './applyFilters';
 import applyTransformations from './applyTransformations';
@@ -10,20 +10,20 @@ import applyTransformations from './applyTransformations';
  * columns not set to IGNORE or otherwise filtered out.
  */
 export default function chunkProcessor(
-	chunk: string[][],
-	opts: IProcessorOptions
+  chunk: string[][],
+  opts: IProcessorOptions
 ) {
-	const { columns, filters, transforms } = opts;
-	// Reduce arrays by creating entities from each
-	// and filtering/transforming them as specified.
-	return chunk.reduce((acc, row) => {
-		let entity = entityFromRow(row, columns);
-		if (applyFilters(filters, entity)) {
-			let transformed = applyTransformations(transforms, entity);
-			return acc.concat(transformed);
-		}
-		return acc;
-	}, []);
+  const { columns, filters, transforms, filterGroups } = opts;
+  // Reduce arrays by creating entities from each
+  // and filtering/transforming them as specified.
+  return chunk.reduce((acc, row) => {
+    let entity = entityFromRow(row, columns);
+    if (applyFilters(filters, filterGroups, entity)) {
+      let transformed = applyTransformations(transforms, entity);
+      return acc.concat(transformed);
+    }
+    return acc;
+  }, []);
 }
 
 /**
@@ -31,11 +31,8 @@ export default function chunkProcessor(
  * but only if they are not set to IGNORE.
  */
 function entityFromRow(row: string[], cols: Column[]) {
-	return row.reduce((acc: any, cur: any, i: number) => {
-		const col = cols[i];
-		if (col.type !== ColumnTypes.IGNORE) {
-			acc[col.name] = cur;
-		}
-		return acc;
-	}, {});
+  return cols.reduce((acc: any, cur: any, i: number) => {
+    acc[cur.name] = row[cur.index];
+    return acc;
+  }, {});
 }

@@ -8,8 +8,10 @@ import {
   TableContainer,
   TableRow
 } from '@material-ui/core';
+import { isEmpty } from 'ramda';
+
 import PreviewTableRow from './PreviewTableRow';
-import { Column, ColumnTypes } from '../types';
+import { Column, ColumnTypes, SourceHeader } from '../types';
 
 import { StateContext, DispatchContext } from '../contexts/store';
 import { updateColType, updateColName } from '../store/actions';
@@ -17,15 +19,16 @@ import { updateColType, updateColName } from '../store/actions';
 const PreviewTable = () => {
   const state = React.useContext(StateContext);
   const dispatch = React.useContext(DispatchContext);
-  const cols = state.settings?.columns;
+  const headers = state.sourceData;
+  const columns = state.settings.columns;
 
-  const handleColumnChange = (idx: number, colType: ColumnTypes) =>
-    dispatch(updateColType(idx, colType));
+  const handleColumnChange = (id: number, colType: ColumnTypes) =>
+    dispatch(updateColType(id, colType));
 
-  const handleNameChange = (idx: number, name: string) =>
-    dispatch(updateColName(idx, name));
+  const handleNameChange = (id: number, name: string) =>
+    dispatch(updateColName(id, name));
 
-  return cols && cols.length > 0 ? (
+  return !isEmpty(headers) ? (
     <TableContainer style={{ maxHeight: '600px', overflowY: 'scroll' }}>
       <Table size="small">
         <TableHead>
@@ -37,18 +40,18 @@ const PreviewTable = () => {
               <Typography>Sample</Typography>
             </TableCell>
             <TableCell>
-              <Typography>Name</Typography>
+              <Typography>Type</Typography>
             </TableCell>
             <TableCell>
-              <Typography>Type</Typography>
+              <Typography>Name</Typography>
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {cols.map((col: Column, i: number) => (
+          {headers.map((header: SourceHeader, i: number) => (
             <PreviewTableRow
-              sample={state.sourceSample[0][i]}
-              col={col}
+              header={header}
+              column={columns.filter((col: Column) => col.index === i)[0]}
               onColumnChange={handleColumnChange}
               onNameChange={handleNameChange}
               key={i}

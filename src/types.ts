@@ -1,7 +1,7 @@
 export interface State {
   sourceFile?: File;
-  sourceSample: string[][];
-  addedDate: Date;
+  sourceData: SourceHeader[];
+  timestamp: number;
   settings: IProcessorOptions;
   savedSettings: IProcessorOptionsContainer;
 }
@@ -12,8 +12,14 @@ export interface IProcessorOptionsContainer {
 
 export interface IProcessorOptions {
   columns: Column[];
-  filters: IFilter[][];
+  filters: IFilter[];
+  filterGroups: { [key: string]: string[] };
   transforms: ITransform[];
+}
+
+export interface SourceHeader {
+  index: number;
+  sample: string;
 }
 
 export interface Action {
@@ -44,10 +50,14 @@ export enum ActionTypes {
   SET_FROM_SAVED = 'SET_FROM_SAVED',
   SAVE_SETTINGS = 'SAVE_SETTINGS',
   REMOVE_SETTINGS = 'REMOVE_SETTINGS',
-  UPDATE_SAVED_SETTINGS = 'UPDATE_SETTINGS'
+  UPDATE_SAVED_SETTINGS = 'UPDATE_SETTINGS',
+  ADD_FILTER = 'ADD_FILTER',
+  REMOVE_FILTER = 'REMOVE_FILTER',
+  MAKE_FILTER_GROUP = 'MAKE_FILTER_GROUP'
 }
 
 export interface IFilter {
+  id: string;
   fn: string;
   attr: string;
   val?: string;

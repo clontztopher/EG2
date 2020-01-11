@@ -2,7 +2,8 @@ import {
   ColumnTypes,
   ActionTypes,
   IProcessorOptionsContainer,
-  IProcessorOptions
+  IProcessorOptions,
+  IFilter
 } from '../types';
 
 export const updateColType = (idx: number, type: ColumnTypes) => ({
@@ -38,4 +39,18 @@ export const removeSettings = (name: string) => ({
 export const setFromSaved = (name: string) => ({
   type: ActionTypes.SET_FROM_SAVED,
   payload: { name }
+});
+
+export const addFilter = (gid: string) => ({
+  type: ActionTypes.ADD_FILTER,
+  payload: { gid }
+});
+
+export const deleteFilter = (id: string) => ({
+  type: ActionTypes.REMOVE_FILTER,
+  payload: { id }
+});
+
+export const makeFilterGroup = () => ({
+  type: ActionTypes.MAKE_FILTER_GROUP
 });

@@ -19,6 +19,8 @@
   "dependencies": {
     "@material-ui/core": "^4.8.0",
     "@material-ui/icons": "^4.5.1",
+    "@types/ramda": "^0.26.39",
+    "immer": "^5.2.1",
     "localforage": "^1.7.3",
     "moment": "^2.24.0",
     "papaparse": "^5.1.1",
